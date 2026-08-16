@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DougFit">
+<meta name="theme-color" content="#0b0d10">
+<title>DougFit</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMGIwZDEwIi8+PHRleHQgeD0iOTAiIHk9IjExOCIgZm9udC1mYW1pbHk9IkhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9Ijc4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iI2M4ZmY0ZCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+REY8L3RleHQ+PC9zdmc+">
+<style>
+:root{
+  --bg:#0b0d10; --surface:#14181d; --surface2:#1c222a; --line:#262e38;
+  --text:#eef2f6; --dim:#93a1b0; --dim2:#6b7887;
+  --accent:#c8ff4d; --accent-dim:#8ba832;
+  --warn:#ffb454; --done:#3ddc84; --ghost:#9d8bff;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text);
+  font:400 16px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  padding-bottom:calc(72px + env(safe-area-inset-bottom));
+  overscroll-behavior-y:none;
+}
+button,input,textarea,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:var(--accent)}
+.hide{display:none!important}
+
+/* ---------- chrome ---------- */
+header{
+  position:sticky;top:0;z-index:40;background:rgba(11,13,16,.86);
+  backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;
+}
+.hrow{display:flex;align-items:center;gap:12px;min-height:32px}
+.brand{font-weight:800;letter-spacing:-.02em;font-size:19px}
+.brand span{color:var(--accent)}
+.htitle{font-weight:700;font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hsub{font-size:12px;color:var(--dim2);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+.iconbtn{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--surface2);flex:none;font-size:17px}
+
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:rgba(15,18,22,.94);backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+nav button{padding:9px 0 8px;display:grid;gap:3px;justify-items:center;color:var(--dim2);font-size:10.5px;font-weight:600;letter-spacing:.03em}
+nav button .ic{font-size:19px;line-height:1}
+nav button.on{color:var(--accent)}
+
+main{padding:16px 16px 28px;max-width:640px;margin:0 auto}
+.pad{padding:0 16px;max-width:640px;margin:0 auto}
+
+/* ---------- generic ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card.tight{padding:13px 14px}
+h2{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim2);margin:22px 0 10px;font-weight:700}
+h2:first-child{margin-top:4px}
+.muted{color:var(--dim);font-size:14px}
+.tiny{font-size:12.5px;color:var(--dim2)}
+.btn{
+  display:block;width:100%;text-align:center;background:var(--accent);color:#0b0d10;
+  font-weight:800;padding:15px;border-radius:13px;letter-spacing:-.01em;font-size:16px;
+}
+.btn:active{transform:scale(.985)}
+.btn.sec{background:var(--surface2);color:var(--text);font-weight:700;border:1px solid var(--line)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--dim);font-weight:600;padding:12px}
+.btn.sm{padding:11px;font-size:14.5px}
+.row{display:flex;gap:9px}
+.row>*{flex:1}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.03em;background:var(--surface2);color:var(--dim)}
+.pill.a{background:rgba(200,255,77,.14);color:var(--accent)}
+.pill.d{background:rgba(61,220,132,.14);color:var(--done)}
+.pill.w{background:rgba(255,180,84,.15);color:var(--warn)}
+.pill.g{background:rgba(157,139,255,.16);color:var(--ghost)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+
+/* ---------- today ---------- */
+.hero{background:linear-gradient(160deg,#1a2129,#12161b);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px}
+.hero .kick{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.hero h1{margin:8px 0 4px;font-size:29px;line-height:1.1;letter-spacing:-.03em;font-weight:800}
+.hero .meta{color:var(--dim);font-size:14px;margin-bottom:16px}
+.bar{height:5px;background:var(--surface2);border-radius:9px;overflow:hidden;margin:14px 0 7px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:9px;transition:width .4s}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 10px;text-align:center}
+.stat b{display:block;font-size:23px;font-weight:800;letter-spacing:-.02em}
+.stat span{font-size:10.5px;color:var(--dim2);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* ---------- lists ---------- */
+.wk{margin-bottom:9px}
+.wkhead{display:flex;align-items:center;gap:9px;padding:9px 2px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim2);font-weight:700}
+.wkhead:after{content:"";flex:1;height:1px;background:var(--line)}
+.item{
+  display:flex;align-items:center;gap:13px;width:100%;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 14px;margin-bottom:8px;
+}
+.item.now{border-color:var(--accent-dim);background:linear-gradient(180deg,#1b2119,#14181d)}
+.item.gh{border-style:dashed}
+.dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--dim2)}
+.dot.done{background:var(--done);border-color:var(--done);color:#062;font-size:15px}
+.dot.now{border-color:var(--accent);color:var(--accent)}
+.dot.gh{border-color:var(--ghost);color:var(--ghost)}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;font-weight:700;font-size:15.5px;letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .t span{font-size:12.5px;color:var(--dim2)}
+.chev{color:var(--dim2);font-size:19px;flex:none}
+
+/* ---------- workout runner ---------- */
+.wtitle{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.15;margin:2px 0 6px}
+.gname{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:800;margin:20px 0 9px}
+.ex{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:9px;overflow:hidden}
+.ex.done{border-color:rgba(61,220,132,.4)}
+.exhead{display:flex;gap:12px;padding:14px;align-items:flex-start;width:100%;text-align:left}
+.check{
+  width:27px;height:27px;border-radius:8px;border:2px solid var(--line);flex:none;margin-top:1px;
+  display:grid;place-items:center;font-size:15px;color:transparent;transition:.15s
+}
+.check.on{background:var(--done);border-color:var(--done);color:#052}
+.exn{flex:1;min-width:0}
+.exn b{display:block;font-weight:700;font-size:15.5px;letter-spacing:-.01em}
+.exn .sr{color:var(--accent);font-size:13.5px;font-weight:700;margin-top:3px}
+.exbody{padding:0 14px 14px;border-top:1px solid var(--line);margin-top:2px;padding-top:12px}
+.exnote{font-size:13.5px;color:var(--dim);line-height:1.5}
+.exlinks{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.lk{font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:9px;background:var(--surface2);color:var(--text);text-decoration:none;display:inline-block}
+.flag{
+  display:flex;gap:8px;align-items:flex-start;margin-top:11px;padding:10px 11px;border-radius:10px;
+  background:rgba(255,180,84,.09);border:1px solid rgba(255,180,84,.28);font-size:12.5px;color:#f0d5a8;line-height:1.45
+}
+.sets{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.setpill{
+  min-width:44px;padding:9px 10px;border-radius:10px;background:var(--surface2);
+  border:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--dim);text-align:center
+}
+.setpill.on{background:rgba(200,255,77,.15);border-color:var(--accent-dim);color:var(--accent)}
+.logrow{display:flex;gap:8px;margin-top:10px;align-items:center}
+.logrow input{
+  flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);border-radius:10px;
+  padding:11px 12px;font-size:14px
+}
+.logrow input:focus{outline:none;border-color:var(--accent-dim)}
+
+/* warmup block */
+.warm{background:linear-gradient(180deg,#1a2028,#14181d);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.warm h3{margin:0 0 4px;font-size:16px;font-weight:800;letter-spacing:-.02em}
+.st{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line)}
+.st:first-of-type{border-top:0}
+.st .n{flex:1}
+.st .n b{font-size:14.5px;font-weight:700;display:block}
+.st .n span{font-size:12.5px;color:var(--dim2);display:block;margin-top:2px;line-height:1.4}
+
+/* sticky footer action */
+.dock{
+  position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom));z-index:45;
+  padding:10px 16px;background:linear-gradient(to top,var(--bg) 62%,transparent);
+}
+.dock .inner{max-width:640px;margin:0 auto}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:80;display:none}
+.sheet.on{display:block}
+.sheet .bd{position:absolute;inset:0;background:rgba(0,0,0,.62)}
+.sheet .pn{
+  position:absolute;left:0;right:0;bottom:0;background:var(--surface);
+  border-radius:22px 22px 0 0;padding:8px 18px calc(26px + env(safe-area-inset-bottom));
+  max-height:88vh;overflow:auto;animation:up .26s cubic-bezier(.2,.9,.3,1)
+}
+@keyframes up{from{transform:translateY(100%)}}
+.grab{width:38px;height:4px;background:var(--line);border-radius:9px;margin:6px auto 16px}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;resize:vertical}
+label.f{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim2);font-weight:700;margin:14px 0 6px}
+.empty{text-align:center;color:var(--dim2);padding:44px 20px;font-size:14.5px;line-height:1.6}
+
+/* last-time log line */
+.last{
+  display:flex;align-items:center;gap:7px;margin-top:9px;padding:8px 11px;border-radius:9px;
+  background:rgba(200,255,77,.07);border:1px solid rgba(200,255,77,.2);
+  font-size:12.5px;color:var(--accent);font-weight:600
+}
+.last span{color:var(--dim2);font-weight:500}
+
+/* rest timer */
+#rest{
+  position:fixed;left:0;right:0;bottom:calc(126px + env(safe-area-inset-bottom));z-index:46;
+  display:none;justify-content:center;pointer-events:none
+}
+#rest.on{display:flex}
+#rest .chip{
+  pointer-events:auto;display:flex;align-items:center;gap:12px;
+  background:var(--surface2);border:1px solid var(--accent-dim);border-radius:99px;
+  padding:9px 9px 9px 17px;box-shadow:0 8px 26px rgba(0,0,0,.5)
+}
+#rest .t{font-variant-numeric:tabular-nums;font-weight:800;font-size:17px;letter-spacing:-.01em;min-width:52px}
+#rest .t.done{color:var(--done)}
+#rest button{background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:7px 12px;font-size:12.5px;font-weight:700}
+#rest .x{width:30px;height:30px;border-radius:50%;padding:0;font-size:15px;color:var(--dim)}
+
+/* storage warning banner */
+#banner{
+  display:none;margin:0 0 12px;padding:12px 14px;border-radius:12px;
+  background:rgba(255,180,84,.12);border:1px solid rgba(255,180,84,.4);
+  font-size:13px;color:#f5d9ac;line-height:1.5
+}
+#banner.on{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <button class="iconbtn hide" id="back">‹</button>
+    <div style="flex:1;min-width:0">
+      <div class="brand" id="brand">DOUG<span>FIT</span></div>
+      <div class="htitle hide" id="htitle"></div>
+      <div class="hsub" id="hsub">Let's get serious</div>
+    </div>
+    <button class="iconbtn" id="hact">⋯</button>
+  </div>
+</header>
+
+<div class="pad" style="padding-top:14px"><div id="banner"></div></div>
+<main id="view"></main>
+
+<div id="rest"><div class="chip">
+  <div class="t" id="restT">1:00</div>
+  <button onclick="addRest(30)">+30s</button>
+  <button class="x" onclick="stopRest()">✕</button>
+</div></div>
+
+<div class="dock hide" id="dock"><div class="inner"></div></div>
+
+<nav>
+  <button data-t="today" class="on"><span class="ic">◎</span>Today</button>
+  <button data-t="program"><span class="ic">▤</span>Program</button>
+  <button data-t="history"><span class="ic">◷</span>History</button>
+  <button data-t="more"><span class="ic">⚙</span>More</button>
+</nav>
+
+<div class="sheet" id="sheet"><div class="bd"></div><div class="pn"><div class="grab"></div><div id="sheetc"></div></div></div>
+
+<script>
+/* ===== DATA INJECTED AT BUILD ===== */
+/*__DATA__*/
+
+/* =====================================================================
+   DougFit — single-file app.
+   Storage: localStorage, namespaced. Falls back to memory if blocked.
+   ===================================================================== */
+
+const BUILD="v6 · 2026-08-13";
+const ALL = [].concat(P1, P2, P3).sort((a,b)=> a.program-b.program || a.week-b.week || a.slot-b.slot);
+
+/* ---------- extension point: add workouts from other formats later ----------
+   DougFit.addWorkouts([{...same schema...}]) — call before first render, or
+   paste new objects into P1/P2/P3 above. `source` can be any string.
+   ---------------------------------------------------------------------- */
+window.DougFit = {
+  addWorkouts(list){ ALL.push(...list); ALL.sort((a,b)=>a.program-b.program||a.week-b.week||a.slot-b.slot); render(); },
+  /* ---------- extension point: health data ----------
+     Register a provider that returns {date, readiness, sleep, hr, steps, ...}
+     e.g. DougFit.health.register('oura', async d => fetch(...))
+     Nothing calls these yet — the UI reads DougFit.health.snapshot(date). */
+  health:{
+    providers:{},
+    register(name,fn){ this.providers[name]=fn; },
+    async snapshot(date){
+      const out={};
+      for(const [k,fn] of Object.entries(this.providers)){
+        try{ out[k]=await fn(date); }catch(e){ out[k]={error:String(e)}; }
+      }
+      return out;
+    }
+  },
+  /* ---------- extension point: other activities (capoeira, runs) ----------
+     Reserved. state.activities is already persisted and exported. */
+  logActivity(a){ state.activities.push({id:uid(),...a}); save(); render(); }
+};
+
+/* ---------- storage ----------
+   iOS note: on a file:// origin WebKit often treats storage as an opaque origin and
+   throws. Rather than silently losing the log, we detect it and warn loudly. */
+const KEY='dougfit.v1';
+let STORAGE_OK=true;
+try{ localStorage.setItem(KEY+'.probe','1'); localStorage.removeItem(KEY+'.probe'); }
+catch(e){ STORAGE_OK=false; }
+
+function load(){
+  try{ const r=localStorage.getItem(KEY); if(r) return JSON.parse(r); }catch(e){}
+  return null;
+}
+function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(state)); STORAGE_OK=true; }
+  catch(e){ STORAGE_OK=false; showBanner(); }
+}
+/* Ask WebKit to upgrade this origin from "best-effort" to "persistent" mode.
+   Best-effort storage can be evicted under disk pressure (least-recently-used origin,
+   evicted as a whole unit). Persistent mode opts out of that automatic eviction.
+   Safari may only grant this after a user gesture, so we retry on first interaction. */
+let PERSISTED=null;
+async function requestPersist(){
+  try{
+    if(!navigator.storage||!navigator.storage.persist) return;
+    if(await navigator.storage.persisted()){ PERSISTED=true; return; }
+    PERSISTED=await navigator.storage.persist();
+  }catch(e){ PERSISTED=null; }
+}
+function persistOnGesture(){
+  if(PERSISTED) return;
+  requestPersist();
+}
+document.addEventListener('pointerdown',persistOnGesture,{once:true});
+
+function showBanner(){
+  const b=document.getElementById('banner'); if(!b) return;
+  b.className='on';
+  b.innerHTML="<b>This device isn't saving your progress.</b> Safari is blocking storage for this page — "
+    +"most likely because it was opened as a local file rather than from a web address. "
+    +"Anything you log now will be lost when you close the app. Export from More to keep it.";
+}
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+/* =====================================================================
+   SCHEMA + MIGRATION
+   Your logged data must survive every future version of this app.
+   Rules that make that true:
+     1. Progress is keyed to WORKOUT IDs (p2w7b), never to filenames or list
+        positions. Renaming a PDF or reordering the program can't orphan history.
+     2. Workout IDs are permanent. New workouts get new ids; ids are never reused
+        for different content.
+     3. Saved state is merged over defaults, so a new version adding a field
+        never wipes an old save — and unknown fields from a NEWER version are
+        preserved rather than dropped.
+     4. Every schema change goes in migrate() as an additive step. A pre-migration
+        snapshot is kept so a bad upgrade is recoverable.
+   ===================================================================== */
+const SCHEMA=2;
+const DEFAULTS={
+  done:{},        // workoutId -> {wid, date, duration, notes, sets:{}, logs:{}}
+  active:null,    // {id, started, sets:{}, logs:{}}
+  ghosts:{},      // "p1w3" -> generated session object
+  edits:{},       // "workoutId::exName" -> {n,sr,no}
+  activities:[],  // capoeira / runs — reserved
+  restDefault:60, restOn:true, warmOpen:true,
+  lastExport:null, lastExportCount:0,
+  skipped:{},     // weekKey -> timestamp; session 3 deliberately not done that week
+  v:SCHEMA
+};
+
+function migrate(s){
+  if(!s || typeof s!=='object') return null;
+  const from = s.v||1;
+  if(from>SCHEMA) return s;              // saved by a newer build — leave it alone
+  if(from===SCHEMA) return s;
+  try{ localStorage.setItem(KEY+'.pre'+from, JSON.stringify(s)); }catch(e){}
+  // --- v1 -> v2: rest timer + backup tracking introduced. Purely additive. ---
+  if(s.v===undefined||s.v<2){
+    if(s.restDefault===undefined) s.restDefault=60;
+    if(s.restOn===undefined) s.restOn=true;
+    if(s.lastExport===undefined) s.lastExport=null;
+    if(s.lastExportCount===undefined) s.lastExportCount=0;
+    s.v=2;
+  }
+  // --- future steps go here, always additive, never deleting keys ---
+  return s;
+}
+
+let state = Object.assign({}, DEFAULTS, migrate(load())||{});
+// belt and braces for nested containers
+state.done=state.done||{}; state.edits=state.edits||{};
+state.ghosts=state.ghosts||{}; state.activities=state.activities||[];
+state.skipped=state.skipped||{};
+state.v=SCHEMA;
+
+/* ---------- helpers ---------- */
+const PROGNAME={1:"Program 1 — Foundation",2:"Program 2 — Enter The Drop Set",3:"Program 3 — Train Like An Athlete"};
+const PROGSHORT={1:"P1",2:"P2",3:"P3"};
+function weekKey(w){ return "p"+w.program+"w"+w.week; }
+function isDone(id){ return !!state.done[id]; }
+function nextUp(){ return ALL.find(w=>!isDone(w.id)) || null; }
+function fmtDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:d.getFullYear()!==new Date().getFullYear()?'numeric':undefined});
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function exKey(w,gi,ei){ return w.id+'::'+gi+'::'+ei; }
+function applyEdit(w,gi,ei,ex){
+  const e=state.edits[w.id+'::'+ex.n];
+  return e? {...ex,...e} : ex;
+}
+
+/* count of exercises in a workout */
+function exCount(w){ return w.groups.reduce((n,g)=>n+g.ex.length,0); }
+
+/* =====================================================================
+   LAST TIME — most recent logged weight/reps for an exercise, by NAME,
+   across every workout it appears in. This is the progressive-overload cue.
+   ===================================================================== */
+let LASTLOG=null;
+function buildLastLog(){
+  LASTLOG={};
+  const entries=Object.values(state.done)
+    .filter(d=>d.logs&&Object.keys(d.logs).length)
+    .sort((a,b)=> new Date(a.date)-new Date(b.date));  // oldest first, so later writes win
+  entries.forEach(d=>{
+    const w=findW(d.wid); if(!w) return;
+    Object.entries(d.logs).forEach(([k,v])=>{
+      if(!v||(!v.w&&!v.r)) return;
+      const p=k.split('::'); const gi=+p[p.length-2], ei=+p[p.length-1];
+      const g=w.groups[gi]; if(!g||!g.ex[ei]) return;
+      LASTLOG[g.ex[ei].n.toLowerCase()]={w:v.w,r:v.r,date:d.date,from:PROGSHORT[w.program]+' W'+w.week};
+    });
+  });
+}
+function lastFor(name){
+  if(!LASTLOG) buildLastLog();
+  return LASTLOG[name.toLowerCase()]||null;
+}
+
+/* =====================================================================
+   REST TIMER — lives outside the render tree so ticking never re-renders
+   the workout. Auto-starts when you complete a set.
+   ===================================================================== */
+let restEnd=0, restIv=null;
+function restSecondsFor(ex){
+  const t=((ex.no||'')+' '+(ex.sr||'')).match(/(\d+)\s*sec(?:ond)?s?\s*rest|rest[^.\d]{0,12}(\d+)\s*sec/i);
+  if(t) return Math.max(5,+(t[1]||t[2]));
+  if(/1 min max|1 min rest/i.test(ex.no||'')) return 60;
+  return state.restDefault||60;
+}
+function startRest(sec){
+  restEnd=Date.now()+sec*1000;
+  document.getElementById('rest').classList.add('on');
+  tickRest();
+  if(restIv) clearInterval(restIv);
+  restIv=setInterval(tickRest,250);
+}
+function tickRest(){
+  const el=document.getElementById('restT'); if(!el) return;
+  let left=Math.round((restEnd-Date.now())/1000);
+  if(left<=0){
+    el.textContent="Go";
+    el.classList.add('done');
+    if(restIv){ clearInterval(restIv); restIv=null; beep(); }
+    setTimeout(()=>{ if(!restIv) stopRest(); },4000);
+    return;
+  }
+  el.classList.remove('done');
+  el.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+}
+function addRest(s){ restEnd=Math.max(restEnd,Date.now())+s*1000; if(!restIv) restIv=setInterval(tickRest,250); tickRest(); }
+function stopRest(){
+  if(restIv){ clearInterval(restIv); restIv=null; }
+  restEnd=0;
+  const r=document.getElementById('rest'); if(r) r.classList.remove('on');
+  const t=document.getElementById('restT'); if(t) t.classList.remove('done');
+}
+function beep(){
+  try{
+    const C=window.AudioContext||window.webkitAudioContext; if(!C) return;
+    const c=new C(), o=c.createOscillator(), g=c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.value=880; g.gain.setValueAtTime(.0001,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(.25,c.currentTime+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.45);
+    o.start(); o.stop(c.currentTime+.5);
+  }catch(e){}
+}
+
+/* all weeks in order, with their workouts */
+function weeks(){
+  const m=new Map();
+  ALL.forEach(w=>{ const k=weekKey(w); if(!m.has(k)) m.set(k,{key:k,program:w.program,week:w.week,list:[]}); m.get(k).list.push(w); });
+  return [...m.values()];
+}
+
+/* ---------- warm-up block ---------- */
+function warmupHTML(w){
+  const wu=WARMUPS[w.warmup||'none'];
+  const extra = (w.source||'').includes('V2.2')||(w.note||'').includes('Scorpion');
+  const list = STRETCHES.concat((w.note||'').includes('Scorpion')?[SCORPION]:[]);
+  const open = state.warmOpen!==false;
+  return `<div class="warm">
+    <button onclick="toggleWarm()" style="display:flex;width:100%;align-items:center;gap:10px;text-align:left">
+      <div style="flex:1">
+        <h3>Warm-up &amp; Stretch</h3>
+        <div class="tiny">${open?'Every DougFit session starts here.':esc(wu.label)+' + '+list.length+' stretches'}</div>
+      </div>
+      <div class="chev" style="transform:rotate(${open?'90':'0'}deg);transition:.2s">›</div>
+    </button>
+    <div class="${open?'':'hide'}" style="margin-top:12px">
+    <div class="st"><div class="dot now" style="width:22px;height:22px;font-size:11px">1</div>
+      <div class="n"><b>${esc(wu.label)}</b><span>${esc(wu.detail)}</span></div></div>
+    ${list.map((s,i)=>`<div class="st">
+      <div class="dot" style="width:22px;height:22px;font-size:11px">${i+2}</div>
+      <div class="n"><b>${esc(s.name)}</b>${s.notes?`<span>${esc(s.notes)}</span>`:''}
+      ${s.video?`<div class="exlinks"><a class="lk" href="${s.video}" target="_blank" rel="noopener">▶ Video</a></div>`:''}</div></div>`).join('')}
+    <div class="tiny" style="margin-top:13px;line-height:1.5;border-top:1px solid var(--line);padding-top:11px">${esc(STRETCH_RULE)}</div>
+    </div>
+  </div>`;
+}
+
+/* =====================================================================
+   GHOST WORKOUT — the missing 3rd (in-person) session
+   Builds a session from Doug's own exercise vocabulary, targeting the
+   muscle groups that week's two written workouts did NOT cover.
+   ===================================================================== */
+const MUSCLES=['chest','back','legs','shoulders','biceps','triceps','core'];
+/* 'conditioning' is tagged but never chosen as a ghost target — it's a finisher, not a focus. */
+/* Order matters — the FIRST match becomes the exercise's primary muscle.
+   Shoulder- and leg-specific patterns run before the broad chest/arm ones so
+   "Rear Flye" doesn't read as chest and "Ham Curl" doesn't read as biceps. */
+const TAGS=[
+  [/(rear|lateral|side|y )\s*(delt|flye|fly)|rear delt|lateral (flye|fly|shoulder)|shoulder press|push press|arnold|external rotation|internal rotation|wall angel|face pull|angel raise|upright row/i,'shoulders'],
+  [/(ham(string)?|leg)\s*curl|squat|lunge|leg press|quad|calf|deadlift|\bsdl\b|glute|abduct|box jump|monster walk|(lateral|band) walk|\brdl\b|romanian|leg extension|step ?up/i,'legs'],
+  [/tricep|skull ?crusher|kick ?back|tate|dip(?!s)|overhead .*extension|extension \(rope\)/i,'triceps'],
+  [/curl|zottman/i,'biceps'],
+  [/bench|chest|flye|fly|push ?up|press machine|hex press|pec|crucifix|spus|chest press/i,'chest'],
+  [/pull ?down|pull ?up|chin ?up|row|\blat\b|pull ?over|shrug|dead stop|archer|seal row/i,'back'],
+  [/\babs?\b|crunch|plank|leg raise|knee tuck|chop|russian|sit ?up|starfish|hip dip|mountain climber|wood chop/i,'core'],
+  [/sprint|run|bike|jump rope|burpee|high knee/i,'conditioning']
+];
+function tagsFor(name){
+  const t=[]; TAGS.forEach(([re,m])=>{ if(re.test(name)&&!t.includes(m)) t.push(m); });
+  return t.length?t:['core'];
+}
+function library(){
+  const seen=new Map();
+  ALL.forEach(w=>w.groups.forEach(g=>g.ex.forEach(ex=>{
+    if(ex.kind==='text') return;
+    // stretches/mobility aren't training movements — never offer them as ghost content
+    if(/stretch|child'?s pose|pigeon|inch worm|it ?band|scorpion|mobility/i.test(ex.n)) return;
+    const k=ex.n.toLowerCase();
+    if(!seen.has(k)) seen.set(k,{...ex,tags:tagsFor(ex.n),from:PROGSHORT[w.program]+' W'+w.week});
+  })));
+  return [...seen.values()];
+}
+/* How much direct work each muscle should get in a full training week.
+   Arms sit low deliberately: they take heavy indirect load from every press and pull,
+   so counting raw exercises makes them look starved when they aren't. */
+const WEEK_TARGET={legs:4,back:4,chest:4,shoulders:3,core:3,triceps:2,biceps:2};
+
+/* Pressing hits triceps, pulling hits biceps, most things hit core.
+   Without this credit the generator concludes "arms are untrained" nearly every week. */
+const INDIRECT={chest:{triceps:.6,shoulders:.3},back:{biceps:.6,shoulders:.2},
+                shoulders:{triceps:.2},legs:{core:.2}};
+
+function weekCoverage(list){
+  const cov={}; MUSCLES.forEach(m=>cov[m]=0);
+  list.forEach(w=>w.groups.forEach(g=>g.ex.forEach(ex=>{
+    const tags=tagsFor(ex.n);
+    tags.forEach((t,i)=>{
+      if(cov[t]===undefined) return;
+      cov[t]+= i===0?1:.5;                       // primary full credit, secondary half
+      const ind=INDIRECT[t]||{};                  // plus what that movement hits indirectly
+      if(i===0) Object.entries(ind).forEach(([m,v])=>{ if(cov[m]!==undefined) cov[m]+=v; });
+    });
+  })));
+  return cov;
+}
+
+/* Deficit against the weekly target, not raw count. Lets legs/back/chest
+   outrank arms when the week's two written sessions have left them short. */
+function weekDeficit(list){
+  const cov=weekCoverage(list), d={};
+  MUSCLES.forEach(m=>d[m]=(WEEK_TARGET[m]||2)-(cov[m]||0));
+  return d;
+}
+/* seeded PRNG so a generated session is stable until you regenerate it */
+function rng(seed){ let s=seed>>>0||1; return ()=>{ s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0; return s/4294967296; }; }
+function shuffle(arr,rand){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* big compound groups earn a bigger share of the session than arms */
+const BIG={legs:3,back:3,chest:3,shoulders:2,triceps:2,biceps:2,core:2};
+
+const COMPOUND=['legs','back','chest'];
+
+function makeGhost(wk){
+  const def=weekDeficit(wk.list);
+  // biggest shortfall first; ties break toward the big compound groups
+  const ranked=MUSCLES.slice().sort((a,b)=> (def[b]-def[a]) || (BIG[b]-BIG[a]) );
+
+  let target=ranked.slice(0,3);
+  // Guardrails so this reads like a real training day, not an arms day:
+  // at least one compound group, and never more than one arm group.
+  if(!target.some(m=>COMPOUND.includes(m))){
+    const best=ranked.find(m=>COMPOUND.includes(m));
+    if(best) target=[best,...target.slice(0,2)];
+  }
+  const arms=target.filter(m=>m==='biceps'||m==='triceps');
+  if(arms.length>1){
+    const drop=arms[1];
+    const sub=ranked.find(m=>!target.includes(m)&&m!=='biceps'&&m!=='triceps');
+    if(sub) target=target.map(m=>m===drop?sub:m);
+  }
+  // lead with the compound work
+  target.sort((a,b)=>(COMPOUND.includes(b)?1:0)-(COMPOUND.includes(a)?1:0));
+
+  const lib=library();
+  const used=new Set();
+  wk.list.forEach(w=>w.groups.forEach(g=>g.ex.forEach(e=>used.add(e.n.toLowerCase()))));
+
+  // Discourage repeating what the two most recent generated sessions already used,
+  // so week-to-week these don't collapse onto the same handful of movements.
+  const recent=new Set();
+  const order=weeks().map(x=>x.key), here=order.indexOf(wk.key);
+  order.slice(Math.max(0,here-2),here).forEach(k=>{
+    const g=state.ghosts[k]; if(g) g.groups.forEach(gr=>gr.ex.forEach(e=>recent.add(e.n.toLowerCase())));
+  });
+
+  const seed=[...wk.key].reduce((a,c)=>a*31+c.charCodeAt(0),7)+(state.ghostSeed||0);
+  const rand=rng(seed);
+  const groups=[];
+
+  const take=(pool,want,out)=>{
+    const fresh=pool.filter(e=>!recent.has(e.n.toLowerCase()));
+    for(const e of shuffle(fresh,rand)){ if(out.length>=want) break; out.push(e); used.add(e.n.toLowerCase()); }
+    for(const e of shuffle(pool,rand)){ if(out.length>=want) break;   // fall back if pool is thin
+      if(!out.some(o=>o.n===e.n)){ out.push(e); used.add(e.n.toLowerCase()); } }
+  };
+
+  target.forEach(m=>{
+    const primary=lib.filter(e=>e.tags[0]===m&&!used.has(e.n.toLowerCase()));
+    const any=lib.filter(e=>e.tags.includes(m)&&e.tags[0]!==m&&!used.has(e.n.toLowerCase()));
+    const want=BIG[m], pick=[];
+    take(primary,want,pick);
+    if(pick.length<want) take(any,want,pick);
+    if(pick.length) groups.push({
+      name:m.charAt(0).toUpperCase()+m.slice(1),
+      ex:pick.map(e=>({n:e.n,sr:e.sr||"3 / 10",no:e.no,v:e.v,src:e.from}))
+    });
+  });
+
+  // rotating core finisher drawn from Doug's own ab work, rather than the same two every week
+  if(!target.includes('core')){
+    const core=lib.filter(e=>e.tags[0]==='core'&&!used.has(e.n.toLowerCase()));
+    const pick=[]; take(core,2,pick);
+    if(pick.length) groups.push({name:"Core finisher",
+      ex:pick.map(e=>({n:e.n,sr:e.sr||"3 / 15",no:e.no,v:e.v,src:e.from}))});
+  }
+  return {
+    id:'ghost-'+wk.key, ghost:true, program:wk.program, week:wk.week, slot:3,
+    title:"Session 3 — "+target.slice(0,2).map(m=>m.charAt(0).toUpperCase()+m.slice(1)).join(" & "),
+    focus:target,
+    source:"Generated from Doug's exercise library",
+    warmup: wk.list[0]? wk.list[0].warmup : 'none',
+    note:"Your third session for the week. Built only from exercises Doug actually programmed for you, "
+        +"weighted toward what this week's other two workouts leave short ("+target.join(', ')+"). "
+        +"Regenerate from the ⋯ menu for a different take, or edit any exercise.",
+    groups
+  };
+}
+/* Session 3s ship pre-built. Regenerating writes to state.ghosts, which wins. */
+function getGhost(wk){
+  return state.ghosts[wk.key] || BAKED_GHOSTS[wk.key] || null;
+}
+function isSkipped(key){ return !!(state.skipped||{})[key]; }
+function toggleSkip(key){
+  state.skipped=state.skipped||{};
+  if(state.skipped[key]) delete state.skipped[key]; else state.skipped[key]=Date.now();
+  save(); render();
+}
+
+/* =====================================================================
+   VIEWS
+   ===================================================================== */
+let route={name:'today',id:null};
+const view=document.getElementById('view');
+const dock=document.getElementById('dock');
+
+function setHeader(title,sub,showBack){
+  document.getElementById('brand').classList.toggle('hide',!!title);
+  const t=document.getElementById('htitle');
+  t.classList.toggle('hide',!title); t.textContent=title||'';
+  document.getElementById('hsub').textContent=sub||"Let's get serious";
+  document.getElementById('back').classList.toggle('hide',!showBack);
+}
+
+function render(){
+  if(route.name==='workout'){ return renderWorkout(); }
+  stopRest();
+  dock.classList.add('hide');
+  setHeader(null,null,false);
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===route.name));
+  ({today:vToday,program:vProgram,history:vHistory,more:vMore}[route.name]||vToday)();
+  window.scrollTo(0,0);
+}
+
+/* ---------- TODAY ---------- */
+function vToday(){
+  const nx=nextUp();
+  const total=ALL.length, done=ALL.filter(w=>isDone(w.id)).length;
+  const hist=Object.values(state.done).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const streak=calcStreak();
+  let h='';
+
+  if(state.active){
+    const w=findW(state.active.id);
+    h+=`<div class="hero"><div class="kick">In progress</div>
+      <h1>${esc(w?w.title:'Workout')}</h1>
+      <div class="meta">${w?PROGSHORT[w.program]+' · Week '+w.week:''} — picked up where you left off</div>
+      <button class="btn" onclick="open_('${state.active.id}')">Resume</button></div>`;
+  }
+
+  if(nx){
+    h+=`<div class="hero">
+      <div class="kick">${state.active?'Next in the plan':'Up next'}</div>
+      <h1>${esc(nx.title)}</h1>
+      <div class="meta">${PROGNAME[nx.program]} · Week ${nx.week}</div>
+      <div class="chips">${(nx.focus||[]).map(f=>`<span class="pill a">${esc(f)}</span>`).join('')}
+        <span class="pill">${exCount(nx)} exercises</span></div>
+      <div class="bar"><i style="width:${(done/total*100).toFixed(1)}%"></i></div>
+      <div class="tiny">${done} of ${total} workouts complete</div>
+      <div style="height:14px"></div>
+      <button class="btn" onclick="open_('${nx.id}')">Start workout</button>
+    </div>`;
+  } else {
+    h+=`<div class="hero"><div class="kick">Complete</div><h1>Every workout done</h1>
+      <div class="meta">All ${total} sessions from Doug's PDFs are logged. Add new workouts, or repeat any week from the Program tab.</div></div>`;
+  }
+
+  h+=`<div class="stats">
+    <div class="stat"><b>${done}</b><span>Done</span></div>
+    <div class="stat"><b>${streak}</b><span>Week streak</span></div>
+    <div class="stat"><b>${total-done}</b><span>Remaining</span></div>
+  </div>`;
+
+  if(backupDue()){
+    const n=Object.keys(state.done).length-(state.lastExportCount||0);
+    h+=`<div class="card tight" style="border-color:rgba(255,180,84,.35);background:rgba(255,180,84,.06)">
+      <div style="font-weight:700">Back up your log</div>
+      <div class="tiny" style="line-height:1.5;margin:4px 0 12px">
+        ${n} workout${n===1?'':'s'} logged since your last backup. One tap saves a copy to Files.</div>
+      <div class="row">
+        <button class="btn sec sm" onclick="exportJSON()">Save backup</button>
+        <button class="btn ghost sm" onclick="state.lastExportCount=Object.keys(state.done).length;state.lastExport=Date.now();save();render()">Later</button>
+      </div>
+    </div>`;
+  }
+
+  // this week's ghost prompt
+  if(nx){
+    const wk=weeks().find(k=>k.key===weekKey(nx));
+    const g=getGhost(wk);
+    const wkey=weekKey(nx);
+    h+=`<h2>Optional third session</h2>`;
+    if(g && !isSkipped(wkey)){
+      h+=`<button class="item gh" onclick="open_('${g.id}')">
+        <div class="dot gh ${isDone(g.id)?'done':''}">${isDone(g.id)?'✓':'3'}</div>
+        <div class="t"><b>${esc(g.title)}</b>
+          <span><span class="pill g" style="padding:1px 7px;font-size:10px">GENERATED</span> ${g.focus.join(', ')}</span></div>
+        <div class="chev">›</div></button>
+        <button class="btn ghost sm" onclick="toggleSkip('${wkey}')">Skip this week — just do Doug's two</button>`;
+    } else if(g){
+      h+=`<div class="item gh" style="opacity:.55">
+        <div class="dot gh">–</div>
+        <div class="t"><b>Skipped this week</b><span>Doing Doug's two sessions only</span></div>
+      </div>
+      <button class="btn ghost sm" onclick="toggleSkip('${wkey}')">Bring session 3 back</button>`;
+    }
+  }
+
+  if(hist.length){
+    h+=`<h2>Recent</h2>`;
+    hist.slice(0,3).forEach(d=>{
+      const w=findW(d.wid);
+      h+=`<div class="item"><div class="dot done">✓</div><div class="t">
+        <b>${esc(w?w.title:d.wid)}</b><span>${fmtDate(d.date)}${d.duration?' · '+d.duration+' min':''}</span>
+      </div></div>`;
+    });
+  }
+  view.innerHTML=h;
+}
+
+function calcStreak(){
+  const ds=Object.values(state.done).map(d=>new Date(d.date)).sort((a,b)=>b-a);
+  if(!ds.length) return 0;
+  const wk=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x.getTime();};
+  const set=new Set(ds.map(wk));
+  let cur=wk(new Date()), n=0;
+  if(!set.has(cur)) cur-=6048e5;
+  while(set.has(cur)){ n++; cur-=6048e5; }
+  return n;
+}
+
+/* ---------- PROGRAM ---------- */
+function vProgram(){
+  let h='';
+  let prog=null;
+  weeks().forEach(wk=>{
+    if(wk.program!==prog){
+      prog=wk.program;
+      h+=`<h2 style="color:var(--accent);font-size:14px">${esc(PROGNAME[prog])}</h2>`;
+    }
+    h+=`<div class="wk"><div class="wkhead">Week ${wk.week}</div>`;
+    wk.list.forEach(w=>{
+      const d=isDone(w.id), nx=nextUp();
+      const now = nx && nx.id===w.id;
+      h+=`<button class="item ${now?'now':''}" onclick="open_('${w.id}')">
+        <div class="dot ${d?'done':(now?'now':'')}">${d?'✓':w.slot}</div>
+        <div class="t"><b>${esc(w.title)}</b><span>${d?fmtDate(state.done[w.id].date):exCount(w)+' exercises'}${(w.flags&&w.flags.length)?' · ⚑':''}</span></div>
+        <div class="chev">›</div></button>`;
+    });
+    const g=getGhost(wk), sk=isSkipped(wk.key);
+    if(g){
+      h+=`<button class="item gh" style="${sk?'opacity:.5':''}" onclick="open_('${g.id}')">
+        <div class="dot gh ${isDone(g.id)?'done':''}">${isDone(g.id)?'✓':(sk?'–':'3')}</div>
+        <div class="t"><b>${esc(g.title)}</b>
+          <span>${sk?'Skipped':`<span class="pill g" style="padding:1px 7px;font-size:10px">GENERATED</span> ${g.focus.join(', ')}`}</span></div>
+        <div class="chev">›</div></button>`;
+    }
+    h+=`</div>`;
+  });
+  h=`<div class="card tight" style="margin-bottom:18px;border-color:rgba(157,139,255,.3)">
+      <div style="font-weight:700;margin-bottom:4px">About session 3</div>
+      <div class="tiny" style="line-height:1.55">Each week has a pre-built third session, marked
+      <span class="pill g" style="padding:1px 7px;font-size:10px">GENERATED</span>. These are <b style="color:var(--text)">not Doug's</b> —
+      they're assembled from exercises he programmed for you, targeting what that week's two real workouts leave short.
+      Every one is optional: skip it and just do Doug's two, or edit and regenerate as you like.
+      Skipping never blocks your progress through the program.</div>
+    </div>`+h;
+  view.innerHTML=h;
+}
+
+/* ---------- HISTORY ---------- */
+function vHistory(){
+  const hist=Object.values(state.done).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!hist.length){ view.innerHTML=`<div class="empty">Nothing logged yet.<br>Finish a workout and it lands here with the date.</div>`; return; }
+  let h=`<div class="stats">
+    <div class="stat"><b>${hist.length}</b><span>Sessions</span></div>
+    <div class="stat"><b>${calcStreak()}</b><span>Week streak</span></div>
+    <div class="stat"><b>${Math.round(hist.reduce((n,d)=>n+(+d.duration||0),0))}</b><span>Total min</span></div>
+  </div>`;
+  let last='';
+  hist.forEach(d=>{
+    const w=findW(d.wid);
+    const m=new Date(d.date).toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    if(m!==last){ h+=`<div class="wkhead">${m}</div>`; last=m; }
+    // A completion whose workout is no longer in the app still shows — history is never dropped
+    h+=`<button class="item" onclick="${w?`open_('${d.wid}')`:'void 0'}">
+      <div class="dot done">✓</div>
+      <div class="t"><b>${esc(w?w.title:'Archived workout')}</b>
+      <span>${fmtDate(d.date)}${w?' · '+PROGSHORT[w.program]+' W'+w.week:' · no longer in the program ('+esc(d.wid)+')'}${d.duration?' · '+d.duration+' min':''}</span></div>
+      ${w?'<div class="chev">›</div>':''}</button>`;
+    if(d.notes) h+=`<div class="tiny" style="margin:-4px 0 10px 52px;line-height:1.5">“${esc(d.notes)}”</div>`;
+  });
+  view.innerHTML=h;
+}
+
+/* ---------- MORE ---------- */
+function vMore(){
+  const flagged=[];
+  ALL.forEach(w=>{
+    (w.flags||[]).forEach(f=>flagged.push({w,f,ex:null}));
+    w.groups.forEach(g=>{
+      (g.flags||[]).forEach(f=>flagged.push({w,f,ex:g.name}));
+      g.ex.forEach(ex=>(ex.flags||[]).forEach(f=>flagged.push({w,f,ex:ex.n})));
+    });
+  });
+  const rest=state.restDefault||60;
+  view.innerHTML=`
+  <h2>Rest timer</h2>
+  <div class="card tight">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="flex:1">
+        <div style="font-weight:700">Auto-start between sets</div>
+        <div class="tiny" style="margin-top:3px">Starts when you tap a set. Doug's own rest instructions override the default where he gives them.</div>
+      </div>
+      <button class="pill ${state.restOn===false?'':'a'}" style="padding:8px 14px"
+        onclick="state.restOn=(state.restOn===false);save();render()">${state.restOn===false?'Off':'On'}</button>
+    </div>
+    <div class="tiny" style="margin:14px 0 7px;letter-spacing:.06em;text-transform:uppercase;font-weight:700">Default rest</div>
+    <div class="row">
+      ${[30,45,60,90,120].map(s=>`<button class="btn ${rest===s?'':'sec'} sm" style="padding:10px 0"
+        onclick="state.restDefault=${s};save();render()">${s}s</button>`).join('')}
+    </div>
+  </div>
+
+  <h2>Your data</h2>
+  <div class="card tight">
+    <div style="font-weight:700">${Object.keys(state.done).length} workouts logged</div>
+    <div class="tiny" style="margin:4px 0 10px;line-height:1.55">${STORAGE_OK
+      ? 'Saved on this device'+(PERSISTED===true?' in <b style="color:var(--done)">persistent mode</b> — protected from automatic eviction.'
+          :PERSISTED===false?' in best-effort mode. iOS may clear it under heavy storage pressure.'
+          :'.')+'<br>Deleting the Home Screen icon, "Clear History and Website Data", or moving to a new phone will still take it. Backups are the only real safety net.'
+      : '<b style="color:var(--warn)">Not saving.</b> Safari is blocking storage for this page. Export now to avoid losing the log.'}</div>
+    <div class="tiny" style="margin-bottom:12px">${state.lastExport
+      ? 'Last backup: '+fmtDate(new Date(state.lastExport).toISOString())+' · '+(Object.keys(state.done).length-(state.lastExportCount||0))+' workouts since'
+      : 'No backup taken yet.'}</div>
+    <div class="row"><button class="btn sec sm" onclick="exportJSON()">Export</button>
+    <button class="btn sec sm" onclick="importJSON()">Import</button></div>
+  </div>
+
+  <h2>Data issues found in the PDFs (${flagged.length})</h2>
+  <div class="card tight">
+    <div class="tiny" style="line-height:1.55;margin-bottom:12px">Doug's PDFs have typos, duplicated group numbers and copy-paste leftovers. Nothing was silently "fixed" — each is flagged in place so you can check with him and correct it in the app.</div>
+    ${flagged.map(f=>`<div class="flag" style="margin-top:8px">⚑
+      <div><b style="color:#ffd9a0">${esc(f.w.title)} · ${PROGSHORT[f.w.program]} W${f.w.week}${f.ex?' · '+esc(f.ex):''}</b><br>${esc(f.f)}</div></div>`).join('')}
+  </div>
+
+  <h2>Updating the app</h2>
+  <div class="card tight">
+    <div class="tiny" style="line-height:1.6">
+      Your log lives in this website's storage, not in the app file. Replacing
+      <code>index.html</code> with a newer version — more workouts, new features — leaves every
+      completion, correction and generated session exactly where it is.<br><br>
+      What it survives: new workouts added, features added, layout changes, data-schema upgrades
+      (handled by an additive migration, with a pre-upgrade snapshot kept).<br><br>
+      What it does <b style="color:var(--text)">not</b> survive: changing the web address it's hosted at.
+      Storage is tied to the origin. If you ever move hosts, Export first and Import after.<br><br>
+      <b style="color:var(--text)">Installed build: ${BUILD}</b> · data schema v${state.v} ·
+      ${ALL.length} workouts + ${Object.keys(BAKED_GHOSTS).length} generated sessions.<br>
+      If you've just uploaded a new version and this still shows the old build, close the app
+      from the app switcher and reopen — GitHub caches the page for up to 10 minutes.
+    </div>
+  </div>
+
+  <h2>Built for later</h2>
+  <div class="card tight">
+    <div class="tiny" style="line-height:1.6">
+      <b style="color:var(--text)">More workouts.</b> Doug's other formats drop straight in — same schema, any <code>source</code> string. Call <code>DougFit.addWorkouts([...])</code> or paste into the data block. Workout IDs are permanent, so adding never disturbs history.<br><br>
+      <b style="color:var(--text)">Oura + Apple Health.</b> <code>DougFit.health.register(name, fn)</code> is wired and waiting; nothing calls it yet. Watch/Oura data will hang off the same date keys this app already writes.<br><br>
+      <b style="color:var(--text)">Other activity.</b> <code>DougFit.logActivity({...})</code> persists and exports today, no UI yet — that's where capoeira and runs will go.
+    </div>
+  </div>
+
+  <h2>Doug's standing rules</h2>
+  <div class="card tight"><div class="tiny" style="line-height:1.6">
+    <b style="color:var(--text)">Cardio.</b> ${esc(CARDIO_RULE)}<br><br>
+    <b style="color:var(--text)">Scheduling.</b> ${esc(SCHEDULE_RULE)}<br><br>
+    <b style="color:var(--text)">Stretching.</b> ${esc(STRETCH_RULE)}
+  </div></div>
+
+  <div style="height:8px"></div>
+  <button class="btn ghost" onclick="resetAll()">Reset all progress</button>
+  <div class="tiny" style="text-align:center;margin-top:14px">DougFit · ${ALL.length} workouts from ${new Set(ALL.map(w=>w.source)).size} source files</div>`;
+}
+
+/* ---------- WORKOUT RUNNER ---------- */
+function findW(id){
+  if(String(id).startsWith('ghost-')){
+    const k=id.slice(6);
+    return state.ghosts[k]||null;
+  }
+  return ALL.find(w=>w.id===id)||null;
+}
+function open_(id){
+  const w=findW(id); if(!w) return;
+  if(!state.active || state.active.id!==id){
+    const prev=state.done[id];
+    state.active={id,started:Date.now(),sets:prev?{...prev.sets}:{},logs:prev?{...prev.logs}:{}};
+    save();
+  }
+  route={name:'workout',id};
+  render();
+}
+function renderWorkout(){
+  const w=findW(route.id); if(!w){ route={name:'today'}; return render(); }
+  const a=state.active&&state.active.id===w.id?state.active:{sets:{},logs:{}};
+  const d=state.done[w.id];
+  setHeader(w.title, (w.ghost?'AI session · ':'')+PROGSHORT[w.program]+' · Week '+w.week, true);
+
+  let h=`<div class="wtitle">${esc(w.title)}</div>
+  <div class="chips" style="margin-bottom:14px">
+    ${(w.focus||[]).map(f=>`<span class="pill ${w.ghost?'g':'a'}">${esc(f)}</span>`).join('')}
+    ${d?`<span class="pill d">✓ ${fmtDate(d.date)}</span>`:''}
+  </div>`;
+
+  if(w.ghost){
+    const wkey='p'+w.program+'w'+w.week, sk=isSkipped(wkey);
+    h+=`<div class="flag" style="background:rgba(157,139,255,.1);border-color:rgba(157,139,255,.3);color:#cfc6ff">✦
+      <div><b>Generated — not written by Doug.</b><br>${esc(w.note)}</div></div>
+      <div style="height:10px"></div>
+      <button class="btn ghost sm" onclick="toggleSkip('${wkey}')">${sk?"Bring this session back":"Skip this week — just do Doug's two"}</button>
+      <div style="height:14px"></div>`;
+  }
+  else if(w.note) h+=`<div class="card tight"><div class="exnote">${esc(w.note)}</div></div>`;
+
+  if(w.sched) h+=`<div class="card tight"><div class="tiny" style="letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin-bottom:5px">That week's schedule</div><div class="exnote">${esc(w.sched)}</div></div>`;
+
+  (w.flags||[]).forEach(f=>{ h+=`<div class="flag">⚑<div>${esc(f)}</div></div><div style="height:10px"></div>`; });
+
+  h+=warmupHTML(w);
+
+  w.groups.forEach((g,gi)=>{
+    h+=`<div class="gname">${esc(g.name)}</div>`;
+    (g.flags||[]).forEach(f=>{ h+=`<div class="flag" style="margin-bottom:9px">⚑<div>${esc(f)}</div></div>`; });
+    g.ex.forEach((raw,ei)=>{
+      const ex=applyEdit(w,gi,ei,raw);
+      const k=exKey(w,gi,ei);
+      const on=!!a.sets[k];
+      const nsets=parseInt((ex.sr||'').match(/^\s*(\d+)/)?.[1]||'0',10);
+      const lg=a.logs[k]||{};
+      h+=`<div class="ex ${on?'done':''}">
+        <button class="exhead" onclick="tog('${k}')">
+          <div class="check ${on?'on':''}">✓</div>
+          <div class="exn"><b>${esc(ex.n)}</b>${ex.sr?`<div class="sr">${esc(ex.sr)}</div>`:''}
+          ${ex.src?`<div class="tiny" style="margin-top:3px">from ${esc(ex.src)}</div>`:''}</div>
+        </button>
+        ${`<div class="exbody">
+          ${ex.no?`<div class="exnote">${esc(ex.no)}</div>`:''}
+          ${(()=>{const L=lastFor(ex.n); return L?`<div class="last">↺ Last: ${esc([L.w,L.r].filter(Boolean).join(' × '))}
+            <span>· ${fmtDate(L.date)} · ${esc(L.from)}</span></div>`:'';})()}
+          ${nsets>1?`<div class="sets">${Array.from({length:Math.min(nsets,6)},(_,i)=>
+            `<div class="setpill ${(a.sets[k+'#'+i])?'on':''}" onclick="togset('${k}',${i},${restSecondsFor(ex)})">${i+1}</div>`).join('')}</div>`:''}
+          <div class="logrow">
+            <input placeholder="Weight" value="${esc(lg.w||'')}" oninput="logv('${k}','w',this.value)" inputmode="decimal">
+            <input placeholder="Reps / notes" value="${esc(lg.r||'')}" oninput="logv('${k}','r',this.value)">
+          </div>
+          <div class="exlinks">
+            ${ex.v?`<a class="lk" href="${ex.v}" target="_blank" rel="noopener">▶ Video</a>`:''}
+            <button class="lk" onclick="editEx('${w.id}',${gi},${ei})">✎ Fix</button>
+          </div>
+          ${(ex.flags||[]).map(f=>`<div class="flag">⚑<div>${esc(f)}</div></div>`).join('')}
+        </div>`}
+      </div>`;
+    });
+  });
+
+  h+=`<div class="tiny" style="margin:22px 0 90px;text-align:center;line-height:1.5">Source: ${esc(w.source)}</div>`;
+  view.innerHTML=h;
+
+  const total=exCount(w), doneN=Object.keys(a.sets).filter(x=>!x.includes('#')&&a.sets[x]).length;
+  dock.classList.remove('hide');
+  dock.querySelector('.inner').innerHTML=
+    `<button class="btn" onclick="finish('${w.id}')">${d?'Update log':'Mark complete'} · ${doneN}/${total}</button>`;
+  window.scrollTo(0,0);
+}
+function toggleWarm(){ state.warmOpen = state.warmOpen===false; save(); renderWorkout(); }
+function tog(k){ const a=state.active; a.sets[k]=!a.sets[k]; save(); renderWorkout(); }
+function togset(k,i,rest){
+  const a=state.active,kk=k+'#'+i;
+  a.sets[kk]=!a.sets[kk];
+  save(); renderWorkout();
+  if(a.sets[kk] && state.restOn!==false) startRest(rest||state.restDefault||60);
+}
+function logv(k,f,v){ const a=state.active; a.logs[k]=a.logs[k]||{}; a.logs[k][f]=v; save(); }
+
+function finish(id){
+  const w=findW(id);
+  const prev=state.done[id];
+  const mins=state.active?Math.max(1,Math.round((Date.now()-state.active.started)/60000)):'';
+  sheet(`<h3 style="margin:0 0 4px;font-size:21px;letter-spacing:-.02em">${esc(w.title)}</h3>
+    <div class="tiny" style="margin-bottom:6px">${PROGSHORT[w.program]} · Week ${w.week}</div>
+    <label class="f">Date completed</label>
+    <input id="fd" type="date" value="${prev?prev.date:new Date().toLocaleDateString('en-CA')}"
+      style="width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px">
+    <label class="f">Duration (minutes)</label>
+    <input id="fm" type="number" inputmode="numeric" value="${prev?(prev.duration||''):mins}"
+      style="width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px">
+    <label class="f">How did it go?</label>
+    <textarea id="fn" rows="3" placeholder="Weights, energy, anything to tell Doug…">${esc(prev?prev.notes:'')}</textarea>
+    <div style="height:18px"></div>
+    <button class="btn" onclick="saveDone('${id}')">Save</button>
+    ${prev?`<div style="height:9px"></div><button class="btn ghost" onclick="undo('${id}')">Remove from history</button>`:''}`);
+}
+function saveDone(id){
+  const a=state.active&&state.active.id===id?state.active:{sets:{},logs:{}};
+  state.done[id]={
+    wid:id,
+    date:document.getElementById('fd').value||new Date().toLocaleDateString('en-CA'),
+    duration:document.getElementById('fm').value,
+    notes:document.getElementById('fn').value,
+    sets:{...a.sets}, logs:{...a.logs}
+  };
+  if(state.active&&state.active.id===id) state.active=null;
+  LASTLOG=null; stopRest();
+  save(); closeSheet(); route={name:'today'}; render();
+}
+function undo(id){ delete state.done[id]; LASTLOG=null; save(); closeSheet(); route={name:'today'}; render(); }
+
+function editEx(wid,gi,ei){
+  const w=findW(wid); const ex=w.groups[gi].ex[ei];
+  const cur=applyEdit(w,gi,ei,ex);
+  sheet(`<h3 style="margin:0 0 6px;font-size:20px;letter-spacing:-.02em">Fix this exercise</h3>
+    <div class="tiny" style="line-height:1.5;margin-bottom:4px">Corrections save on this device and override the PDF. The original stays underneath.</div>
+    <label class="f">Exercise</label>
+    <input id="en" value="${esc(cur.n)}" style="width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px">
+    <label class="f">Sets / reps</label>
+    <input id="es" value="${esc(cur.sr||'')}" style="width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px">
+    <label class="f">Notes</label>
+    <textarea id="eo" rows="3">${esc(cur.no||'')}</textarea>
+    <div style="height:18px"></div>
+    <button class="btn" onclick="saveEdit('${wid}','${esc(ex.n).replace(/'/g,"\\'")}')">Save correction</button>
+    ${state.edits[wid+'::'+ex.n]?`<div style="height:9px"></div><button class="btn ghost" onclick="clearEdit('${wid}','${esc(ex.n).replace(/'/g,"\\'")}')">Revert to PDF</button>`:''}`);
+}
+function saveEdit(wid,orig){
+  state.edits[wid+'::'+orig]={n:document.getElementById('en').value,sr:document.getElementById('es').value,no:document.getElementById('eo').value};
+  save(); closeSheet(); renderWorkout();
+}
+function clearEdit(wid,orig){ delete state.edits[wid+'::'+orig]; save(); closeSheet(); renderWorkout(); }
+
+/* Build every missing session 3 in chronological order, so each one can see
+   the previous two and avoid repeating their movements. */
+function genAllGhosts(){
+  weeks().forEach(wk=>{ if(!state.ghosts[wk.key]) state.ghosts[wk.key]=makeGhost(wk); });
+  save(); render();
+}
+function genGhost(key,regen){
+  const wk=weeks().find(k=>k.key===key); if(!wk) return;
+  if(regen) state.ghostSeed=(state.ghostSeed||0)+101;
+  state.ghosts[key]=makeGhost(wk); save();
+  if(regen){ route={name:'workout',id:'ghost-'+key}; state.active=null; }
+  render();
+}
+
+/* ---------- export / import ---------- */
+/* ---------- backup nudge ----------
+   Storage on iOS is durable but not guaranteed: deleting the Home Screen icon,
+   "Clear History and Website Data", a new phone, or severe disk pressure can all
+   take it. One tap saves a copy into Files (which syncs to iCloud Drive). */
+const NUDGE_WORKOUTS=5, NUDGE_DAYS=30;
+function backupDue(){
+  const n=Object.keys(state.done).length;
+  if(!n) return false;
+  const since=n-(state.lastExportCount||0);
+  const days=state.lastExport? (Date.now()-state.lastExport)/864e5 : 999;
+  return since>=NUDGE_WORKOUTS || (since>0 && days>=NUDGE_DAYS);
+}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='dougfit-backup-'+new Date().toLocaleDateString('en-CA')+'.json';
+  a.click();
+  state.lastExport=Date.now();
+  state.lastExportCount=Object.keys(state.done).length;
+  save();
+  setTimeout(()=>{ if(route.name!=='workout') render(); },400);
+}
+/* Import MERGES rather than replaces: restoring an old backup can never delete
+   completions you've logged since. Per workout, the later date wins. */
+function importJSON(){
+  const i=document.createElement('input'); i.type='file'; i.accept='.json,application/json';
+  i.onchange=()=>{ const f=i.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{
+      let j; try{ j=migrate(JSON.parse(r.result)); }catch(e){ return alert("Couldn't read that file."); }
+      if(!j||typeof j!=='object') return alert("That doesn't look like a DougFit backup.");
+      let added=0, kept=0;
+      Object.entries(j.done||{}).forEach(([id,d])=>{
+        const cur=state.done[id];
+        if(!cur){ state.done[id]=d; added++; }
+        else if(new Date(d.date)>new Date(cur.date)){ state.done[id]=d; added++; }
+        else kept++;
+      });
+      state.edits={...(j.edits||{}),...state.edits};
+      state.ghosts={...(j.ghosts||{}),...state.ghosts};
+      const seen=new Set(state.activities.map(a=>a.id));
+      (j.activities||[]).forEach(a=>{ if(!seen.has(a.id)) state.activities.push(a); });
+      LASTLOG=null; save(); render();
+      alert(added+' workout'+(added===1?'':'s')+' restored.'+(kept?' '+kept+' already up to date.':''));
+    };
+    r.readAsText(f); };
+  i.click();
+}
+function resetAll(){
+  if(!confirm('Erase all completions, corrections and generated sessions on this device?')) return;
+  state={done:{},active:null,ghosts:{},edits:{},activities:[],tab:'today'}; save(); route={name:'today'}; render();
+}
+
+/* ---------- sheet ---------- */
+const sh=document.getElementById('sheet');
+function sheet(html){ document.getElementById('sheetc').innerHTML=html; sh.classList.add('on'); }
+function closeSheet(){ sh.classList.remove('on'); }
+sh.querySelector('.bd').onclick=closeSheet;
+
+/* ---------- nav ---------- */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{ route={name:b.dataset.t}; render(); });
+document.getElementById('back').onclick=()=>{ route={name:'program'}; render(); };
+document.getElementById('hact').onclick=()=>{
+  if(route.name==='workout'){
+    const w=findW(route.id);
+    sheet(`<h3 style="margin:0 0 12px;font-size:20px">${esc(w.title)}</h3>
+      <button class="btn sec sm" onclick="closeSheet();finish('${w.id}')">Mark complete…</button>
+      <div style="height:9px"></div>
+      ${w.ghost?`<button class="btn ghost sm" onclick="closeSheet();genGhost('${'p'+w.program+'w'+w.week}',true)">Regenerate this session</button><div style="height:9px"></div>`:''}
+      <button class="btn ghost sm" onclick="closeSheet();state.active=null;save();route={name:'program'};render()">Discard progress &amp; exit</button>`);
+  } else { route={name:'more'}; render(); }
+};
+
+if(!STORAGE_OK) showBanner();
+requestPersist().then(()=>{ if(route.name==='more') render(); });
+render();
+</script>
+</body>
+</html>
