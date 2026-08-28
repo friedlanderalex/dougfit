@@ -1374,7 +1374,7 @@ const BAKED_GHOSTS = {"p1w1":{"id":"ghost-p1w1","ghost":true,"program":1,"week":
    Storage: localStorage, namespaced. Falls back to memory if blocked.
    ===================================================================== */
 
-const BUILD="v6 · 2026-08-13";
+const BUILD="v7 · 2026-08-16";
 const ALL = [].concat(P1, P2, P3).sort((a,b)=> a.program-b.program || a.week-b.week || a.slot-b.slot);
 
 /* ---------- extension point: add workouts from other formats later ----------
@@ -2064,9 +2064,11 @@ function vMore(){
 
 /* ---------- WORKOUT RUNNER ---------- */
 function findW(id){
+  // Session 3s resolve the same way everywhere: a regenerated one wins, otherwise
+  // the pre-built one. Keep this in step with getGhost() — they must not diverge.
   if(String(id).startsWith('ghost-')){
     const k=id.slice(6);
-    return state.ghosts[k]||null;
+    return state.ghosts[k] || BAKED_GHOSTS[k] || null;
   }
   return ALL.find(w=>w.id===id)||null;
 }
